@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 
+// create token using jwt
 module.exports.createToken = (data) => {
   const newData = {
     id: data._id,
@@ -13,14 +14,14 @@ module.exports.createToken = (data) => {
   return token;
 };
 
-module.exports.successResponse = (req, res, message, data, code = 200) => {
-  res.json({
+//success response 
+module.exports.successResponse = (req, res, message, data, code = 200) => 
+    res.json({
     code,
     message,
     data,
     success: true,
   });
-};
 
 module.exports.errorResponse = (
   req,

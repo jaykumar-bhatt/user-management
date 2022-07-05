@@ -23,7 +23,7 @@ exports.createUser = async (req, res) => {
     const newUser = await users.create(payload);
     const token = createToken(newUser);
 
-    return successResponse(req, res, "User created successfully.",{"token":token}, 201);
+    return successResponse(req, res, "User created successfully.", {"token":token}, 201);
   } catch (error) {
     return errorResponse(req,res,"Error while creating User.", 500, error.message);
   }
@@ -67,10 +67,12 @@ exports.getAllUser = async (req, res) => {
 exports.getOneUser = async (req, res) => {
   try {
     const user = req.user
+
     const userData = await users.findById(
       user.id,
       { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
     );
+
     successResponse(req, res, "User Data fetch successfully.", userData, 200);
   } catch (error) {
     return errorResponse(req, res,"Error while fetch Users.", 500, error.message);
@@ -79,7 +81,7 @@ exports.getOneUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try{
-    const { id } = req.params 
+    const { id } = req.params
     const { name, username, email, age } = req.body;
     
     const payload = {
@@ -101,10 +103,13 @@ exports.removeUser = async (req, res) => {
   try{
     const { id } = req.params
     const user = await users.findById(id);
+
     if(!user) {
       return errorResponse(req, res, "User not found.", 404);
     }
+
     await users.findByIdAndDelete(id);
+
     return successResponse(req, res, "User Delete successfully.", null, 200);
   } catch (error) {
     return errorResponse(req, res, "Error while Delete User.", 500, error.message);
