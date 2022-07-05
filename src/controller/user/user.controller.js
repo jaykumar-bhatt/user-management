@@ -3,10 +3,10 @@ const users = require("../../model/user");
 const { createToken } = require("../../helper/index");
 
 exports.createUser = async (req, res) => {
+  try {
   const password = bcrypt.hashSync(req.body.password, 10);
   const { name, username, email, age } = req.body;
 
-  try {
     const payload = {
       name,
       username,
@@ -38,9 +38,8 @@ exports.createUser = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
-
   try {
+    const { email, password } = req.body;
     const user = await users.findOne({ email });
     if (!user) {
       return res.status(404).json({
@@ -80,7 +79,7 @@ exports.getAllUser = async (req, res) => {
       Data: userData,
     });
   } catch (error) {
-    res.status(400).json({
+    res.status(500).json({
       message: "Error while fetch Users.",
       error: error.message,
     });
@@ -88,20 +87,46 @@ exports.getAllUser = async (req, res) => {
 };
 
 exports.getOneUser = async (req, res) => {
-  const { id } = req.params;
-
-  await users
-    .findById(id, { password: 0, __v: 0, createdAt: 0, updatedAt: 0 })
-    .then((data) => {
-      return res.status(200).json({
-        message: "User fetch Successfully.",
-        Data: data,
-      });
-    })
-    .catch((error) => {
-      return res.status(400).json({
-        message: "Error while fetch User.",
-        error: error.message,
-      });
+  try {
+    const user = req.user
+    const userData = await users.findById(
+      user.id,
+      { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
+    );
+    return res.status(200).json({
+      message: "User Data fetch successfully.",
+      Data: userData,
     });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error while fetch Users.",
+      error: error.message,
+    });
+  }
 };
+
+exports.updateUser = async (req, res) => {
+  try{
+    const { id } = req.params 
+    const { name, username, email, age } = req.body;
+    const payload = {
+      name,
+      username,
+      email,
+      age,
+    };
+
+    await users.findByIdAndUpdate(id,payload);
+    
+    return res.status(201).json({
+      message: "User Data update successfully.",
+      Data: userData,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Error while update Users.",
+      error: error.message,
+    });
+  }
+}

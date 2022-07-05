@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 
 module.exports.createToken = (data) => {
   const newData = {
+    id: data._id,
     name: data.name,
     username: data.username,
     email: data.email,
@@ -11,3 +12,5 @@ module.exports.createToken = (data) => {
   const token = jwt.sign(newData, process.env.SECRET, { expiresIn: '1h' });
   return token;
 };
+
+// module.exports.successResponse(req, res,)
