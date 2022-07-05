@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const users = require("../../model/user");
-const { createToken } = require("../../helper/index");
+const { createToken, successResponse, errorResponse } = require("../../helper/index");
 
 exports.createUser = async (req, res) => {
   try {
@@ -17,23 +17,15 @@ exports.createUser = async (req, res) => {
 
     const user = await users.findOne({email});
     if(user){
-      return res.status(400).json({
-        message: "Email id already exist.",
-      });
+      return errorResponse(req, res, "Email id already exist.", 400);
     }
 
     const newUser = await users.create(payload);
     const token = createToken(newUser);
 
-    return res.status(201).json({
-      message: "User created successfully.",
-      Token: token,
-    });
+    return successResponse(req, res, "User created successfully.",{"token":token}, 201);
   } catch (error) {
-    return res.status(400).json({
-      message: "Error while creating User.",
-      error: error.message,
-    });
+    return errorResponse(req,res,"Error while creating User.", 500, error.message);
   }
 };
 
@@ -49,21 +41,13 @@ exports.login = async (req, res) => {
 
     const result = await bcrypt.compare(password, user.password);
     if (!result) {
-      return res.status(403).json({
-        message: "password is incorrect.",
-      });
+      errorResponse(req,res,"password is incorrect.", 403) 
     }
 
     const token = createToken(user);
-    return res.status(201).json({
-      message: "User login successfully.",
-      Token: token,
-    });
+    return successResponse(req,res,"User login successfully.", {"token":token}, 201)
   } catch (error) {
-    res.status(400).json({
-      message: "Error while login.",
-      error: error.message,
-    });
+    return errorResponse(req, res, "Error while login.", 500, error.message);
   }
 };
 
@@ -74,15 +58,9 @@ exports.getAllUser = async (req, res) => {
       { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
     );
 
-    return res.status(200).json({
-      message: "All users fetch Successfully.",
-      Data: userData,
-    });
+    return successResponse(req, res, "All users fetch Successfully.", userData, 200);
   } catch (error) {
-    res.status(500).json({
-      message: "Error while fetch Users.",
-      error: error.message,
-    });
+    return errorResponse(req, res, "Error while fetch Users.", 500, error.message);
   }
 };
 
@@ -93,15 +71,9 @@ exports.getOneUser = async (req, res) => {
       user.id,
       { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
     );
-    return res.status(200).json({
-      message: "User Data fetch successfully.",
-      Data: userData,
-    });
+    successResponse(req, res, "User Data fetch successfully.", userData, 200);
   } catch (error) {
-    res.status(500).json({
-      message: "Error while fetch Users.",
-      error: error.message,
-    });
+    return errorResponse(req, res,"Error while fetch Users.", 500, error.message);
   }
 };
 
@@ -109,6 +81,7 @@ exports.updateUser = async (req, res) => {
   try{
     const { id } = req.params 
     const { name, username, email, age } = req.body;
+    
     const payload = {
       name,
       username,
@@ -118,15 +91,22 @@ exports.updateUser = async (req, res) => {
 
     await users.findByIdAndUpdate(id,payload);
     
-    return res.status(201).json({
-      message: "User Data update successfully.",
-      Data: userData,
-    });
-
+    return successResponse(req, res, "User Data update successfully.", null, 201);
   } catch (error) {
-    res.status(500).json({
-      message: "Error while update Users.",
-      error: error.message,
-    });
+    return errorResponse(req, res, "Error while update User.", 500, error.message);
+  }
+}
+
+exports.removeUser = async (req, res) => {
+  try{
+    const { id } = req.params
+    const user = await users.findById(id);
+    if(!user) {
+      return errorResponse(req, res, "User not found.", 404);
+    }
+    await users.findByIdAndDelete(id);
+    return successResponse(req, res, "User Delete successfully.", null, 200);
+  } catch (error) {
+    return errorResponse(req, res, "Error while Delete User.", 500, error.message);
   }
 }

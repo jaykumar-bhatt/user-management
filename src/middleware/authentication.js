@@ -1,28 +1,20 @@
 const jwt = require('jsonwebtoken');
-
-exports.auth = async (req, res, next) => {
+const { errorResponse } = require("../helper/index");
+exports.authentication = async (req, res, next) => {
   try { 
     const authToken = req.headers.authorization; 
     if(!authToken){
-      res.status(404).json({
-        message: "Token not found",
-      });
+      return errorResponse(req, res, "Token not found", 404);
     }
     const verifyToken = authToken.split(' ')[1];
     jwt.verify(verifyToken, process.env.SECRET, (error, user) => {
       if (error) {
-        return res.status(403).json({
-          message: "You are not authorize.",
-          error: error.message,
-        }); 
+        return errorResponse(req, res, "You are not authorize.", 403);
       }
       req.user = user;
       next();
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Error in authentication.",
-      error: error.message,
-    });
+    return errorResponse(req, res, "Error in authentication.", 500);
   }
 }
