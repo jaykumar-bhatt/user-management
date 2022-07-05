@@ -8,19 +8,19 @@ const connectDb = require('./src/config/connection');
 
 const port = process.env.PORT || 8080;
 
-//handel cors error
+//Handel cors error
 app.use(cors());
 
-//Mongodb connection
+//Mongodb Connection
 connectDb();
 
 //log requests
 app.use(morgan('tiny'));
 
-//parse request into json with 1mb limit
+//Parse request into json with 1mb limit
 app.use(express.json({limit: '1mb'}));
 
-//load routes
+//Load routes
 app.use('/',require('./src/routes/user.route'));
 
 app.listen(port, ()=> {

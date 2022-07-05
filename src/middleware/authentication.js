@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { errorResponse } = require("../helper/index");
 
+// Authentication Middelware 
 exports.authentication = async (req, res, next) => {
   try { 
     const authToken = req.headers.authorization;

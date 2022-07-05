@@ -1,6 +1,7 @@
 const joi = require("joi");
 const { errorResponse } = require("../../helper");
 
+// Add User Validation
 const userAddObj = joi.object({
   name: joi.string().trim(true),
   username: joi.string().trim(true).required(),
@@ -27,6 +28,7 @@ const userAddValidation = async (req, res, next) => {
   next();
 };
 
+// Update User Validation
 const userUpdateObj = joi.object({
   name: joi.string().trim(true),
   username: joi.string().trim(true),
@@ -51,19 +53,18 @@ const userUpdateValidation = async (req, res, next) => {
   next();
 };
 
+// Login User Validation
 const loginObj = joi.object({
   email: joi.string().email().required(),
   password: joi.string().required(),
 });
 
 const loginValidation = async (req, res, next) => {
-  const { name, username, email, age } = req.body;
+  const { email, password } = req.body;
 
   const payload = {
-    name,
-    username,
     email,
-    age,
+    password,
   };
 
   const { error } = loginObj.validate(payload);

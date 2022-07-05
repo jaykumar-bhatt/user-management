@@ -1,7 +1,8 @@
 const bcrypt = require("bcrypt");
-const users = require("../../model/user");
+const Users = require("../../model/user");
 const { createToken, successResponse, errorResponse } = require("../../helper/index");
 
+// Create User
 exports.createUser = async (req, res) => {
   try {
   const password = bcrypt.hashSync(req.body.password, 10);
@@ -15,12 +16,14 @@ exports.createUser = async (req, res) => {
       age,
     };
 
-    const user = await users.findOne({email});
+    const user = await Users.findOne({email});
+
+    // Check Email already exists
     if(user){
       return errorResponse(req, res, "Email id already exist.", 400);
     }
 
-    const newUser = await users.create(payload);
+    const newUser = await Users.create(payload);
     const token = createToken(newUser);
 
     return successResponse(req, res, "User created successfully.", {"token":token}, 201);
@@ -29,16 +32,20 @@ exports.createUser = async (req, res) => {
   }
 };
 
+// Login User
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await users.findOne({ email });
+    const user = await Users.findOne({ email });
+
+    // Check Email not exists
     if (!user) {
       return res.status(404).json({
         message: "Email not found.",
       });
     }
 
+    // Compare password
     const result = await bcrypt.compare(password, user.password);
     if (!result) {
       errorResponse(req,res,"Password is incorrect.", 403) 
@@ -51,38 +58,48 @@ exports.login = async (req, res) => {
   }
 };
 
+// Show All Users
 exports.getAllUser = async (req, res) => {
   try {
-    const userData = await users.find(
+    const userData = await Users.find(
       {},
       { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
     );
 
-    return successResponse(req, res, "All users fetch successfully.", userData, 200);
+    return successResponse(req, res, "All Users fetch successfully.", userData, 200);
   } catch (error) {
-    return errorResponse(req, res, "Error while fetch users.", 500, error.message);
+    return errorResponse(req, res, "Error while fetch Users.", 500, error.message);
   }
 };
 
+// Show Particular User
 exports.getOneUser = async (req, res) => {
   try {
     const user = req.user
 
-    const userData = await users.findById(
+    const userData = await Users.findById(
       user.id,
       { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
     );
 
     successResponse(req, res, "User data fetch successfully.", userData, 200);
   } catch (error) {
-    return errorResponse(req, res,"Error while fetch users.", 500, error.message);
+    return errorResponse(req, res,"Error while fetch Users.", 500, error.message);
   }
 };
 
+// Update User
 exports.updateUser = async (req, res) => {
   try{
     const { id } = req.params
     const { name, username, email, age } = req.body;
+
+    const user = await Users.findOne({email});
+    
+    // Check Email already exists
+    if(user) {
+      return errorResponse(req, res, "Email already exists.", 403);
+    }
     
     const payload = {
       name,
@@ -91,7 +108,7 @@ exports.updateUser = async (req, res) => {
       age,
     };
 
-    await users.findByIdAndUpdate(id,payload);
+    await Users.findByIdAndUpdate(id,payload);
     
     return successResponse(req, res, "User data update successfully.", null, 201);
   } catch (error) {
@@ -99,16 +116,18 @@ exports.updateUser = async (req, res) => {
   }
 }
 
+// delete User
 exports.removeUser = async (req, res) => {
   try{
     const { id } = req.params
-    const user = await users.findById(id);
+    const user = await Users.findById(id);
 
+    // Check if user not exists
     if(!user) {
       return errorResponse(req, res, "User not found.", 404);
     }
 
-    await users.findByIdAndDelete(id);
+    await Users.findByIdAndDelete(id);
 
     return successResponse(req, res, "User delete successfully.", null, 200);
   } catch (error) {

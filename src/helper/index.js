@@ -16,13 +16,14 @@ module.exports.createToken = (data) => {
 
 //success response 
 module.exports.successResponse = (req, res, message, data, code = 200) => 
-    res.json({
+    res.status(code).json({
     code,
     message,
     data,
     success: true,
   });
 
+//error response
 module.exports.errorResponse = (
   req,
   res,
@@ -30,7 +31,7 @@ module.exports.errorResponse = (
   code = 500,
   error = {}
 ) =>
-  res.status(500).json({
+  res.status(code).json({
     code,
     errorMessage,
     error,
