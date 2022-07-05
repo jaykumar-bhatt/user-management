@@ -2,11 +2,11 @@ const jwt = require('jsonwebtoken');
 
 module.exports.createToken = (data) => {
   const newData = {
-    enrollment: data.enrollment,
     name: data.name,
+    username: data.username,
     email: data.email,
     password: data.password,
-    gender: data.gender,
+    age: data.age,
   };
   const token = jwt.sign(newData, process.env.SECRET);
   return token;

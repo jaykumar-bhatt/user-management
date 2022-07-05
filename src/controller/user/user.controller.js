@@ -43,7 +43,7 @@ exports.login = async (req, res) => {
     const result = await bcrypt.compare(password, user.password);
     if (!result) {
       return res.status(403).json({
-        message:"password is incorrect.",
+        message: "password is incorrect.",
       });
     }
 
@@ -52,11 +52,48 @@ exports.login = async (req, res) => {
       message: "User login successfully.",
       Token: token,
     });
-
   } catch (error) {
     res.status(400).json({
       message: "Error while login.",
       error: error.message,
     });
   }
+};
+
+exports.getAllUser = async (req, res) => {
+  try {
+    const userData = await users.find(
+      {},
+      { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
+    );
+
+    return res.status(200).json({
+      message: "All users fetch Successfully.",
+      Data: userData,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Error while fetch Users.",
+      error: error.message,
+    });
+  }
+};
+
+exports.getOneUser = async (req, res) => {
+  const { id } = req.params;
+
+  await users
+    .findById(id, { password: 0, __v: 0, createdAt: 0, updatedAt: 0 })
+    .then((data) => {
+      return res.status(200).json({
+        message: "User fetch Successfully.",
+        Data: data,
+      });
+    })
+    .catch((error) => {
+      return res.status(400).json({
+        message: "Error while fetch User.",
+        error: error.message,
+      });
+    });
 };
