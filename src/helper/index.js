@@ -8,6 +8,6 @@ module.exports.createToken = (data) => {
     password: data.password,
     age: data.age,
   };
-  const token = jwt.sign(newData, process.env.SECRET);
+  const token = jwt.sign(newData, process.env.SECRET, { expiresIn: '1h' });
   return token;
 };

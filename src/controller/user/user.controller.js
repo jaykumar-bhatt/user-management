@@ -14,6 +14,14 @@ exports.createUser = async (req, res) => {
       password,
       age,
     };
+
+    const user = await users.findOne({email});
+    if(user){
+      return res.status(400).json({
+        message: "Email id already exist.",
+      });
+    }
+
     const newUser = await users.create(payload);
     const token = createToken(newUser);
 
