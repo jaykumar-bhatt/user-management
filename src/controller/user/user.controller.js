@@ -35,13 +35,13 @@ exports.login = async (req, res) => {
     const user = await users.findOne({ email });
     if (!user) {
       return res.status(404).json({
-        message: "Email not Found.",
+        message: "Email not found.",
       });
     }
 
     const result = await bcrypt.compare(password, user.password);
     if (!result) {
-      errorResponse(req,res,"password is incorrect.", 403) 
+      errorResponse(req,res,"Password is incorrect.", 403) 
     }
 
     const token = createToken(user);
@@ -58,9 +58,9 @@ exports.getAllUser = async (req, res) => {
       { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
     );
 
-    return successResponse(req, res, "All users fetch Successfully.", userData, 200);
+    return successResponse(req, res, "All users fetch successfully.", userData, 200);
   } catch (error) {
-    return errorResponse(req, res, "Error while fetch Users.", 500, error.message);
+    return errorResponse(req, res, "Error while fetch users.", 500, error.message);
   }
 };
 
@@ -73,9 +73,9 @@ exports.getOneUser = async (req, res) => {
       { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
     );
 
-    successResponse(req, res, "User Data fetch successfully.", userData, 200);
+    successResponse(req, res, "User data fetch successfully.", userData, 200);
   } catch (error) {
-    return errorResponse(req, res,"Error while fetch Users.", 500, error.message);
+    return errorResponse(req, res,"Error while fetch users.", 500, error.message);
   }
 };
 
@@ -93,9 +93,9 @@ exports.updateUser = async (req, res) => {
 
     await users.findByIdAndUpdate(id,payload);
     
-    return successResponse(req, res, "User Data update successfully.", null, 201);
+    return successResponse(req, res, "User data update successfully.", null, 201);
   } catch (error) {
-    return errorResponse(req, res, "Error while update User.", 500, error.message);
+    return errorResponse(req, res, "Error while update user.", 500, error.message);
   }
 }
 
@@ -110,8 +110,8 @@ exports.removeUser = async (req, res) => {
 
     await users.findByIdAndDelete(id);
 
-    return successResponse(req, res, "User Delete successfully.", null, 200);
+    return successResponse(req, res, "User delete successfully.", null, 200);
   } catch (error) {
-    return errorResponse(req, res, "Error while Delete User.", 500, error.message);
+    return errorResponse(req, res, "Error while delete user.", 500, error.message);
   }
 }
