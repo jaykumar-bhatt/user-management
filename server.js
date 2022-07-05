@@ -20,6 +20,8 @@ app.use(morgan('tiny'));
 //parse request into json with 1mb limit
 app.use(express.json({limit: '1mb'}));
 
+//load routes
+app.use('/',require('./src/routes/user.route'));
 
 app.listen(port, ()=> {
   console.log(`Server is running on port ${port}`)
