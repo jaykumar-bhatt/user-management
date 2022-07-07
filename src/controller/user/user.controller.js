@@ -1,12 +1,16 @@
 const bcrypt = require("bcrypt");
 const Users = require("../../model/user");
-const { createToken, successResponse, errorResponse } = require("../../helper/index");
+const {
+  createToken,
+  successResponse,
+  errorResponse,
+} = require("../../helper/index");
 
 // Create User
 exports.createUser = async (req, res) => {
   try {
-  const password = bcrypt.hashSync(req.body.password, 10);
-  const { name, username, email, age } = req.body;
+    const password = bcrypt.hashSync(req.body.password, 10);
+    const { name, username, email, age } = req.body;
 
     const payload = {
       name,
@@ -16,19 +20,31 @@ exports.createUser = async (req, res) => {
       age,
     };
 
-    const user = await Users.findOne({email});
+    const user = await Users.findOne({ email });
 
     // Check Email already exists
-    if(user){
+    if (user) {
       return errorResponse(req, res, "Email id already exist.", 400);
     }
 
     const newUser = await Users.create(payload);
     const token = createToken(newUser);
 
-    return successResponse(req, res, "User created successfully.", {"token":token}, 201);
+    return successResponse(
+      req,
+      res,
+      "User created successfully.",
+      { token: token },
+      201
+    );
   } catch (error) {
-    return errorResponse(req,res,"Error while creating User.", 500, error.message);
+    return errorResponse(
+      req,
+      res,
+      "Error while creating User.",
+      500,
+      error.message
+    );
   }
 };
 
@@ -48,11 +64,17 @@ exports.login = async (req, res) => {
     // Compare password
     const result = await bcrypt.compare(password, user.password);
     if (!result) {
-      errorResponse(req,res,"Password is incorrect.", 403) 
+      errorResponse(req, res, "Password is incorrect.", 403);
     }
 
     const token = createToken(user);
-    return successResponse(req,res,"User login successfully.", {"token":token}, 201)
+    return successResponse(
+      req,
+      res,
+      "User login successfully.",
+      { token: token },
+      201
+    );
   } catch (error) {
     return errorResponse(req, res, "Error while login.", 500, error.message);
   }
@@ -66,41 +88,61 @@ exports.getAllUser = async (req, res) => {
       { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
     );
 
-    return successResponse(req, res, "All Users fetch successfully.", userData, 200);
+    return successResponse(
+      req,
+      res,
+      "All Users fetch successfully.",
+      userData,
+      200
+    );
   } catch (error) {
-    return errorResponse(req, res, "Error while fetch Users.", 500, error.message);
+    return errorResponse(
+      req,
+      res,
+      "Error while fetch Users.",
+      500,
+      error.message
+    );
   }
 };
 
 // Show Particular User
 exports.getOneUser = async (req, res) => {
   try {
-    const user = req.user
+    const user = req.user;
 
-    const userData = await Users.findById(
-      user.id,
-      { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
-    );
+    const userData = await Users.findById(user.id, {
+      password: 0,
+      __v: 0,
+      createdAt: 0,
+      updatedAt: 0,
+    });
 
     successResponse(req, res, "User data fetch successfully.", userData, 200);
   } catch (error) {
-    return errorResponse(req, res,"Error while fetch Users.", 500, error.message);
+    return errorResponse(
+      req,
+      res,
+      "Error while fetch Users.",
+      500,
+      error.message
+    );
   }
 };
 
 // Update User
 exports.updateUser = async (req, res) => {
-  try{
-    const { id } = req.params
+  try {
+    const { id } = req.params;
     const { name, username, email, age } = req.body;
 
-    const user = await Users.findOne({email});
-    
+    const user = await Users.findOne({ email });
+
     // Check Email already exists
-    if(user) {
+    if (user) {
       return errorResponse(req, res, "Email already exists.", 403);
     }
-    
+
     const payload = {
       name,
       username,
@@ -108,22 +150,34 @@ exports.updateUser = async (req, res) => {
       age,
     };
 
-    await Users.findByIdAndUpdate(id,payload);
-    
-    return successResponse(req, res, "User data update successfully.", null, 201);
+    await Users.findByIdAndUpdate(id, payload);
+
+    return successResponse(
+      req,
+      res,
+      "User data update successfully.",
+      null,
+      201
+    );
   } catch (error) {
-    return errorResponse(req, res, "Error while update user.", 500, error.message);
+    return errorResponse(
+      req,
+      res,
+      "Error while update user.",
+      500,
+      error.message
+    );
   }
-}
+};
 
 // delete User
 exports.removeUser = async (req, res) => {
-  try{
-    const { id } = req.params
+  try {
+    const { id } = req.params;
     const user = await Users.findById(id);
 
     // Check if user not exists
-    if(!user) {
+    if (!user) {
       return errorResponse(req, res, "User not found.", 404);
     }
 
@@ -131,6 +185,12 @@ exports.removeUser = async (req, res) => {
 
     return successResponse(req, res, "User delete successfully.", null, 200);
   } catch (error) {
-    return errorResponse(req, res, "Error while delete user.", 500, error.message);
+    return errorResponse(
+      req,
+      res,
+      "Error while delete user.",
+      500,
+      error.message
+    );
   }
-}
+};

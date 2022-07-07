@@ -74,6 +74,4 @@ const loginValidation = async (req, res, next) => {
   next();
 };
 
-
-
 module.exports = { userAddValidation, userUpdateValidation, loginValidation };

@@ -37,7 +37,7 @@ const seedUsers = [
     email: "dhaval@gmail.com",
     password: "$2b$10$rgn9HJMWNvED3SoK1M0cSes1DCl01c1RrqhOb6FFNMBdLZYVPdzla", //12345
     age: 21,
-  })
+  }),
 ];
 
 const craeteData = async () => {
