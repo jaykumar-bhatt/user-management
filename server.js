@@ -1,11 +1,12 @@
-const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
-const path = require('path');
-require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
+const morgan = require("morgan");
+const consola = require("consola");
+const path = require("path");
+require("dotenv").config();
 const app = express();
 
-const connection = require('./src/config/connection');
+const connection = require("./src/config/connection");
 
 const port = process.env.PORT || 8080;
 
@@ -16,19 +17,19 @@ app.use(cors());
 connection.connectDb();
 
 //log requests
-app.use(morgan('tiny'));
+app.use(morgan("tiny"));
 
 //Parse request into json with 1mb limit
-app.use(express.json({limit: '1mb'}));
+app.use(express.json({ limit: "1mb" }));
 
 //Load routes
-app.use('/',require('./src/routes/user.route'));
+app.use("/", require("./src/routes/user.route"));
 
 //Defult route
-app.get('/', (req,res) => {
-  res.status(200).sendFile(path.join(__dirname,'src/views/index.html'));
-})
+app.get("/", (req, res) => {
+  res.status(200).sendFile(path.join(__dirname, "src/views/index.html"));
+});
 
-app.listen(port, ()=> {
-  console.log(`Server is running on port ${port}`)
-})
+app.listen(port, () => {
+  consola.success(`Server is running on port ${port}`);
+});

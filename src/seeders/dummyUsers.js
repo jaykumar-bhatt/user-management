@@ -1,3 +1,4 @@
+const consola = require("consola");
 const connection = require("../config/connection");
 const Users = require("../model/user");
 connection.connectDb();
@@ -43,10 +44,10 @@ const seedUsers = [
 const craeteData = async () => {
   try {
     await Users.bulkSave(seedUsers);
-    console.log("Seed successfully.");
+    consola.success("Seed successfully.");
     connection.disconnectDb();
   } catch (error) {
-    console.log(error);
+    consola.error(error);
     connection.disconnectDb();
   }
 };
