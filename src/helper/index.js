@@ -35,3 +35,10 @@ module.exports.errorResponse = (
     error,
     success: false,
   });
+
+module.exports.userProjection = {
+  name: 1,
+  username: 1,
+  email: 1,
+  age: 1,
+};

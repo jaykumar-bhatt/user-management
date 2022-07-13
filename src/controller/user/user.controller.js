@@ -4,6 +4,7 @@ const {
   createToken,
   successResponse,
   errorResponse,
+  userProjection,
 } = require("../../helper/index");
 
 // Create User
@@ -20,7 +21,7 @@ exports.createUser = async (req, res) => {
       age,
     };
 
-    const user = await Users.findOne({ email });
+    const user = await Users.exists({ email }).lean();
 
     // Check Email already exists
     if (user) {
@@ -52,7 +53,7 @@ exports.createUser = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await Users.findOne({ email });
+    const user = await Users.findOne({ email }).lean();
 
     // Check Email not exists
     if (!user) {
@@ -83,10 +84,7 @@ exports.login = async (req, res) => {
 // Show All Users
 exports.getAllUser = async (req, res) => {
   try {
-    const userData = await Users.find(
-      {},
-      { password: 0, __v: 0, createdAt: 0, updatedAt: 0 }
-    );
+    const userData = await Users.find().select(userProjection).lean();
 
     return successResponse(
       req,
@@ -111,12 +109,9 @@ exports.getOneUser = async (req, res) => {
   try {
     const user = req.user;
 
-    const userData = await Users.findById(user.id, {
-      password: 0,
-      __v: 0,
-      createdAt: 0,
-      updatedAt: 0,
-    });
+    const userData = await Users.findById(user.id)
+      .select(userProjection)
+      .lean();
 
     successResponse(req, res, "User data fetch successfully.", userData, 200);
   } catch (error) {
@@ -136,10 +131,10 @@ exports.updateUser = async (req, res) => {
     const { id } = req.params;
     const { name, username, email, age } = req.body;
 
-    const user = await Users.findOne({ email });
+    const user = await Users.exists({ email }).select("_id").lean();
 
     // Check Email already exists
-    if (user) {
+    if (user && user._id != id) {
       return errorResponse(req, res, "Email already exists.", 403);
     }
 
@@ -174,7 +169,7 @@ exports.updateUser = async (req, res) => {
 exports.removeUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await Users.findById(id);
+    const user = await Users.exists({ _id: id });
 
     // Check if user not exists
     if (!user) {
